@@ -3,6 +3,7 @@
 using System.Globalization;
 using HelloWorld.Data;
 using HelloWorld.Models;
+using Microsoft.Extensions.Configuration;
 
 namespace HelloWorld
 {
@@ -10,6 +11,10 @@ namespace HelloWorld
     {
         public static void Main(string[] args)
         {
+            IConfiguration config = new ConfigurationBuilder()
+                .AddJsonFile("appsettings.json")
+                .Build();
+
             Computer myComputer = new Computer()
             {
                 ComputerId = 0,
@@ -43,8 +48,8 @@ namespace HelloWorld
                 + myComputer.VideoCard
                 + "')";
 
-            DataContxtDapper dapper = new DataContxtDapper();
-            DataContextEF entityFramework = new DataContextEF();
+            DataContxtDapper dapper = new DataContxtDapper(config);
+            DataContextEF entityFramework = new DataContextEF(config);
 
             int result = dapper.exucuteSqlWithRowsCount(dbInsertComputerString);
 
