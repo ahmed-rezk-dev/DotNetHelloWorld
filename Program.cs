@@ -1,9 +1,11 @@
 ﻿// See https://aka.ms/new-console-template for more information
 
 using System.Globalization;
+using System.Text.Json;
 using HelloWorld.Data;
 using HelloWorld.Models;
 using Microsoft.Extensions.Configuration;
+using Newtonsoft.Json;
 
 namespace HelloWorld
 {
@@ -14,6 +16,8 @@ namespace HelloWorld
             IConfiguration config = new ConfigurationBuilder()
                 .AddJsonFile("appsettings.json")
                 .Build();
+
+            DataContxtDapper dapper = new DataContxtDapper(config);
 
             Computer myComputer = new Computer()
             {
@@ -26,44 +30,62 @@ namespace HelloWorld
                 VideoCard = "RTX 2060"
             };
 
-            string dbInsertComputerString =
-                @"INSERT INTO TutorialAppSchema.Computer (
-                Motherboard,
-                HasWifi,
-                HasLTE,
-                ReleaseDate,
-                Price,
-                VideoCard
-            ) VALUES ('"
-                + myComputer.Motherboard
-                + "','"
-                + myComputer.HasWifi
-                + "','"
-                + myComputer.HasLTE
-                + "','"
-                + myComputer.ReleaseDate.ToString("yyyy-MM-dd")
-                + "','"
-                + myComputer.Price.ToString("0.00", CultureInfo.InvariantCulture)
-                + "','"
-                + myComputer.VideoCard
-                + "')";
+            string computersJosn = File.ReadAllText("Computers.json");
 
-            DataContxtDapper dapper = new DataContxtDapper(config);
-            DataContextEF entityFramework = new DataContextEF(config);
+            JsonSerializerOptions jsonSerializerOptions = new JsonSerializerOptions()
+            {
+                PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+            };
 
-            int result = dapper.exucuteSqlWithRowsCount(dbInsertComputerString);
+            IEnumerable<Computer>? computersFromSystemJson =
+                System.Text.Json.JsonSerializer.Deserialize<IEnumerable<Computer>>(
+                    computersJosn,
+                    jsonSerializerOptions
+                );
 
-            Console.WriteLine(result);
-
-            // string myComputerSqlString = @"SELECT * FROM TutorialAppSchema.Computer";
-            // IEnumerable<Computer> computers = dapper.LoadData<Computer>(myComputerSqlString);
-            IEnumerable<Computer>? computers = entityFramework.Computer?.ToList<Computer>();
-
-            if (computers != null)
-                foreach (Computer computer in computers)
+            if (computersFromSystemJson != null)
+                foreach (Computer computer in computersFromSystemJson)
                 {
-                    Console.WriteLine(computer.ComputerId);
+                    string sql =
+                        @"INSERT INTO TutorialAppSchema.Computer (
+                      Motherboard,
+                      HasWifi,
+                      HasLTE,
+                      ReleaseDate,
+                      Price,
+                      VideoCard
+                  ) VALUES ('"
+                        + EscapeSingleQuote(computer.Motherboard)
+                        + "','"
+                        + computer.HasWifi
+                        + "','"
+                        + computer.HasLTE
+                        + "','"
+                        + computer.ReleaseDate?.ToString("yyyy-MM-dd")
+                        + "','"
+                        + computer.Price.ToString("0.00", CultureInfo.InvariantCulture)
+                        + "','"
+                        + EscapeSingleQuote(computer.VideoCard)
+                        + "')";
+                    dapper.exucuteSql(sql);
                 }
+
+            IEnumerable<Computer>? computersFromNewTonSoft = JsonConvert.DeserializeObject<
+                IEnumerable<Computer>
+            >(computersJosn);
+
+            // if (computersFromNewTonSoft != null)
+            //     foreach (Computer computer in computersFromNewTonSoft)
+            //     {
+            //         Console.WriteLine(computer.Motherboard);
+            //     }
+        }
+
+        static string EscapeSingleQuote(string input)
+        {
+            string output = input.Replace("'", "''");
+
+            return output;
         }
     }
 }
