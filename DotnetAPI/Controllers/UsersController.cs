@@ -30,7 +30,7 @@ namespace DotNetAPI.Controllers
         }
 
         [HttpPost("")]
-        public bool Create(User User)
+        public IActionResult Create(User User)
         {
             string sql =
                 @$"INSERT INTO TutorialAppSchema.Users ( 
@@ -47,11 +47,15 @@ namespace DotNetAPI.Controllers
                     '{User.Gender}',
                     '{User.Active}'
                 )";
-            return _dapper.Execute(sql);
+            if (_dapper.Execute(sql))
+            {
+                return Ok("User successfully created.");
+            }
+            throw new Exception("Failed to create user.");
         }
 
-        [HttpPut("{ UserId}")]
-        public bool Update(string UserId, User User)
+        [HttpPut("{UserId}")]
+        public IActionResult Update(string UserId, User User)
         {
             string sql =
                 @$"UPDATE TutorialAppSchema.Users 
@@ -62,14 +66,22 @@ namespace DotNetAPI.Controllers
                     Gender='{User.Gender}', 
                     Active='{User.Active}'
                 WHERE UserId = {UserId}";
-            return _dapper.Execute(sql);
+            if (_dapper.Execute(sql))
+            {
+                return Ok("User successfully updated.");
+            }
+            throw new Exception("Failed to update user.");
         }
 
         [HttpDelete("{UserId}")]
-        public bool Delete(string UserId)
+        public IActionResult Delete(string UserId)
         {
             string sql = @$"DELETE FROM TutorialAppSchema.Users WHERE UserId = {UserId}";
-            return _dapper.Execute(sql);
+            if (_dapper.Execute(sql))
+            {
+                return Ok("User successfully deleted.");
+            }
+            throw new Exception("Failed to delete user.");
         }
     }
 }
