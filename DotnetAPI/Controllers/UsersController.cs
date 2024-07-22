@@ -28,5 +28,26 @@ namespace DotNetAPI.Controllers
             string sql = @$"SELECT * FROM TutorialAppSchema.Users WHERE UserId = {UserId}";
             return _dapper.LoadDataSingle<User>(sql);
         }
+
+        [HttpPost("")]
+        public bool Create(User User)
+        {
+            string sql =
+                @$"INSERT INTO TutorialAppSchema.Users ( 
+                    FirstName, 
+                    LastName, 
+                    Email, 
+                    Gender, 
+                    Active
+                )
+                VALUES(
+                    '{User.FirstName}',
+                    '{User.LastName}',
+                    '{User.Email}',
+                    '{User.Gender}',
+                    '{User.Active}'
+                )";
+            return _dapper.Execute(sql);
+        }
     }
 }
