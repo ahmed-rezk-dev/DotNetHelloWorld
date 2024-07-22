@@ -1,3 +1,4 @@
+using DotNet.Models;
 using DotNetAPI.Data;
 using Microsoft.AspNetCore.Mvc;
 
@@ -14,17 +15,11 @@ namespace DotNetAPI.Controllers
             _dapper = new DataContextDapper(config);
         }
 
-        [HttpGet("TestSql")]
-        public DateTime TestSql()
+        [HttpGet("")]
+        public IEnumerable<User> All()
         {
-            return _dapper.LoadDataSingle<DateTime>("SELECT GETDATE()");
-        }
-
-        [HttpGet("GetUsers/{newUser}")]
-        public string[] GetUsers(string newUser)
-        {
-            string[] usersList = new string[] { "Ahmed Rezk", "Jacob mac", newUser };
-            return usersList;
+            string sql = @"SELECT * FROM TutorialAppSchema.Users";
+            return _dapper.LoadData<User>(sql);
         }
     }
 }
