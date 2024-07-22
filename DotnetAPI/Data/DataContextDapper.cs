@@ -29,7 +29,7 @@ namespace DotNetAPI.Data
             return dbConnection.QuerySingle<T>(sql);
         }
 
-        public bool execute(string sql)
+        public bool Execute(string sql)
         {
             IDbConnection dbConnection = new SqlConnection(
                 _config.GetConnectionString("DefaultConnection")
@@ -37,7 +37,7 @@ namespace DotNetAPI.Data
             return dbConnection.Execute(sql) > 0;
         }
 
-        public int executeWithRowCount(string sql)
+        public int ExecuteWithRowCount(string sql)
         {
             IDbConnection dbConnection = new SqlConnection(
                 _config.GetConnectionString("DefaultConnection")
