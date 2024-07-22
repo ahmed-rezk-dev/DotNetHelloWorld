@@ -21,5 +21,12 @@ namespace DotNetAPI.Controllers
             string sql = @"SELECT * FROM TutorialAppSchema.Users";
             return _dapper.LoadData<User>(sql);
         }
+
+        [HttpGet("{UserId}")]
+        public User Find(string UserId)
+        {
+            string sql = @$"SELECT * FROM TutorialAppSchema.Users WHERE UserId = {UserId}";
+            return _dapper.LoadDataSingle<User>(sql);
+        }
     }
 }
