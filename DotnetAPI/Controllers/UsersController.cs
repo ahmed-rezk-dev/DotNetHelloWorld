@@ -49,5 +49,20 @@ namespace DotNetAPI.Controllers
                 )";
             return _dapper.Execute(sql);
         }
+
+        [HttpPut("{ UserId}")]
+        public bool Update(string UserId, User User)
+        {
+            string sql =
+                @$"UPDATE TutorialAppSchema.Users 
+                SET 
+                    FirstName='{User.FirstName}', 
+                    LastName='{User.LastName}', 
+                    Email='{User.Email}', 
+                    Gender='{User.Gender}', 
+                    Active='{User.Active}'
+                WHERE UserId = {UserId}";
+            return _dapper.Execute(sql);
+        }
     }
 }
