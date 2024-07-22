@@ -64,5 +64,12 @@ namespace DotNetAPI.Controllers
                 WHERE UserId = {UserId}";
             return _dapper.Execute(sql);
         }
+
+        [HttpDelete("{UserId}")]
+        public bool Delete(string UserId)
+        {
+            string sql = @$"DELETE FROM TutorialAppSchema.Users WHERE UserId = {UserId}";
+            return _dapper.Execute(sql);
+        }
     }
 }
