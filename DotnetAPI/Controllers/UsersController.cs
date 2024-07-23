@@ -30,7 +30,7 @@ namespace DotNetAPI.Controllers
         }
 
         [HttpPost("")]
-        public IActionResult Create(User User)
+        public IActionResult Create(UserDto user)
         {
             string sql =
                 @$"INSERT INTO TutorialAppSchema.Users ( 
@@ -41,11 +41,11 @@ namespace DotNetAPI.Controllers
                     Active
                 )
                 VALUES(
-                    '{User.FirstName}',
-                    '{User.LastName}',
-                    '{User.Email}',
-                    '{User.Gender}',
-                    '{User.Active}'
+                    '{user.FirstName}',
+                    '{user.LastName}',
+                    '{user.Email}',
+                    '{user.Gender}',
+                    '{user.Active}'
                 )";
             if (_dapper.Execute(sql))
             {
@@ -55,16 +55,16 @@ namespace DotNetAPI.Controllers
         }
 
         [HttpPut("{UserId}")]
-        public IActionResult Update(string UserId, User User)
+        public IActionResult Update(string UserId, UserDto user)
         {
             string sql =
                 @$"UPDATE TutorialAppSchema.Users 
                 SET 
-                    FirstName='{User.FirstName}', 
-                    LastName='{User.LastName}', 
-                    Email='{User.Email}', 
-                    Gender='{User.Gender}', 
-                    Active='{User.Active}'
+                    FirstName='{user.FirstName}', 
+                    LastName='{user.LastName}', 
+                    Email='{user.Email}', 
+                    Gender='{user.Gender}', 
+                    Active='{user.Active}'
                 WHERE UserId = {UserId}";
             if (_dapper.Execute(sql))
             {

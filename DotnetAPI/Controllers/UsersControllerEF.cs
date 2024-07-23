@@ -37,9 +37,9 @@ namespace DotNetAPI.Controllers
         }
 
         [HttpPost("")]
-        public IActionResult Create(User user)
+        public IActionResult Create(UserDto user)
         {
-            User newUser = new User();
+            UserDto newUser = new UserDto();
             newUser.FirstName = user.FirstName;
             newUser.LastName = user.LastName;
             newUser.Email = user.Email;
@@ -54,7 +54,7 @@ namespace DotNetAPI.Controllers
         }
 
         [HttpPut("{UserId}")]
-        public IActionResult Update(int UserId, User user)
+        public IActionResult Update(int UserId, UserDto user)
         {
             User? findUser = _entityFramework
                 .Users.Where(User => User.UserId == UserId)
