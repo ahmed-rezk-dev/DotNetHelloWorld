@@ -141,5 +141,125 @@ namespace DotNetAPI.Controllers
                 new Dictionary<string, string> { { "token", _authHelper.CreateToken(userId) } }
             );
         }
+
+        [HttpGet("RefreshToken")]
+        public string RefreshToken()
+        {
+            string userIdSql =
+                @"
+                SELECT UserId FROM TutorialAppSchema.Users WHERE UserId = '"
+                + User.FindFirst("userId")?.Value
+                + "'";
+
+            int userId = _dapper.LoadDataSingle<int>(userIdSql);
+
+            return _authHelper.CreateToken(userId);
+        }
+
+        [AllowAnonymous]
+        [HttpPost("RegisterV2")]
+        public IActionResult RegisterV2(UserRegistrationDto inputs)
+        {
+            string Email = inputs.Password;
+            string password = inputs.Password;
+            string passwordConfirmation = inputs.PasswordConfirmation;
+
+            if (password != passwordConfirmation)
+                return Ok("Password And Confirm Password Are Not Matched");
+
+            // Check if any users are already registered with the same Email.
+            string sqlCheckUserExists =
+                "SELECT Email FROM TutorialAppSchema.Auth WHERE Email = '" + Email + "'";
+
+            IEnumerable<string> existingUsers = _dapper.LoadData<string>(sqlCheckUserExists);
+
+            if (existingUsers.Count() > 0)
+                return BadRequest("User Is Already Registered.");
+
+            byte[] saltBytes = _authHelper.GenerateSalt();
+            // Hash the password with the salt
+            string PasswordHash = _authHelper.HashPassword(password, saltBytes);
+            string PasswordSalt = Convert.ToBase64String(saltBytes);
+
+            string sqlCreatUserString =
+                @"INSERT INTO TutorialAppSchema.Auth (Email, PasswordHash, PasswordSalt) VALUES (@Email, @PasswordHash, @PasswordSalt)";
+            _dapper.ExecuteWithParameters(
+                sqlCreatUserString,
+                new
+                {
+                    Email,
+                    PasswordHash,
+                    PasswordSalt
+                }
+            );
+
+            return Ok("User Resgistered successfully");
+        }
+
+        [AllowAnonymous]
+        [HttpPost("LoginV2")]
+        public IActionResult LoginV2(UserLoginDto inputs)
+        {
+            string sqlCheckUserExists =
+                "SELECT Email FROM TutorialAppSchema.Auth WHERE Email = '" + inputs.Email + "'";
+
+            IEnumerable<string> existingUsers = _dapper.LoadData<string>(sqlCheckUserExists);
+
+            if (existingUsers.Count() == 0)
+                return NotFound("User not found");
+
+            // In a real scenario, you would retrieve these values from your database
+            string sqlUserAuth =
+                @"SELECT PasswordHash, PasswordSalt FROM TutorialAppSchema.Auth WHERE Email = '"
+                + inputs.Email
+                + "'";
+
+            UserAuth? user = _dapper.LoadDataSingle<UserAuth>(sqlUserAuth);
+
+            string storedHashedPassword = user.PasswordHash; // "hashed_password_from_database";
+            string storedSalt = user.PasswordSalt; //"salt_from_database";
+            // byte[] storedSaltBytes = user.PasswordSalt;
+            string enteredPassword = inputs.Password; //"user_entered_password";
+
+            // Convert the stored salt and entered password to byte arrays
+            byte[] storedSaltBytes = Convert.FromBase64String(user.PasswordSalt);
+            byte[] enteredPasswordBytes = Encoding.UTF8.GetBytes(enteredPassword);
+            //
+            // // Concatenate entered password and stored salt
+            byte[] saltedPassword = new byte[enteredPasswordBytes.Length + storedSaltBytes.Length];
+            Buffer.BlockCopy(
+                enteredPasswordBytes,
+                0,
+                saltedPassword,
+                0,
+                enteredPasswordBytes.Length
+            );
+            Buffer.BlockCopy(
+                storedSaltBytes,
+                0,
+                saltedPassword,
+                enteredPasswordBytes.Length,
+                storedSaltBytes.Length
+            );
+            //
+            // // Hash the concatenated value
+            string enteredPasswordHash = _authHelper.HashPassword(enteredPassword, storedSaltBytes);
+
+            // // Compare the entered password hash with the stored hash
+            if (enteredPasswordHash == storedHashedPassword)
+            {
+                return Ok("Password is correct.");
+            }
+            else
+            {
+                return Ok("Password is incorrect.");
+            }
+        }
+
+        [HttpPost("Logout")]
+        public IActionResult Logout()
+        {
+            return Ok("Logout success");
+        }
     }
 }
