@@ -26,6 +26,7 @@ namespace DotNetAPI.Data
         public virtual DbSet<User> Users { get; set; }
         public virtual DbSet<UsersJobInfo> UsersJobInfo { get; set; }
         public virtual DbSet<UserSalary> UserSalary { get; set; }
+        public virtual DbSet<UserAuth> UserAuth { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -37,6 +38,11 @@ namespace DotNetAPI.Data
 
             modelBuilder.Entity<UsersJobInfo>().HasKey(u => u.UserId);
             modelBuilder.Entity<UserSalary>().HasKey(u => u.UserId);
+            modelBuilder
+                .HasDefaultSchema("TutorialAppSchema")
+                .Entity<UserAuth>()
+                .ToTable("Auth", "TutorialAppSchema")
+                .HasNoKey();
         }
     }
 }
