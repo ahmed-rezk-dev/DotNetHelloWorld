@@ -1,3 +1,4 @@
+
 namespace DotNetAPI.Models
 {
     public partial class Post
@@ -12,7 +13,7 @@ namespace DotNetAPI.Models
 
     public partial class PostDto
     {
-        public string PostTitle { get; set; } = "";
-        public string PostContect { get; set; } = "";
+        public required string PostTitle { get; set; }
+        public required string PostContect { get; set; }
     }
 }

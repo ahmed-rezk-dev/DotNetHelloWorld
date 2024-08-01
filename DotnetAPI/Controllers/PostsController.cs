@@ -82,8 +82,28 @@ namespace DotNetAPI.Controllers
             return Ok(posts);
         }
 
-        // TODO: Update post
+        //* Update post by post {PostId}
+        [HttpPut("{postId}")]
+        public IActionResult Update(int postId, PostDto inputs)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState.ToList());
 
+            Post? post = _dataContext.Post.Where(post => post.PostId == postId).FirstOrDefault();
+
+            if (post != null)
+            {
+                post.PostTitle = inputs.PostTitle;
+                post.PostContect = inputs.PostContect;
+                post.PostUpdated = DateTime.Now;
+                if (_dataContext.SaveChanges() > 0)
+                {
+                    return Ok("Post successfully updated.");
+                }
+                return BadRequest("Failed to update post.");
+            }
+            return NotFound("Post Not Found.");
+        }
 
         // TODO: Delete post
     }
