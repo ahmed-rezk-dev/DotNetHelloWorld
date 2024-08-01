@@ -1,4 +1,5 @@
 using DotNet.Models;
+using DotNetAPI.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace DotNetAPI.Data
@@ -27,6 +28,7 @@ namespace DotNetAPI.Data
         public virtual DbSet<UsersJobInfo> UsersJobInfo { get; set; }
         public virtual DbSet<UserSalary> UserSalary { get; set; }
         public virtual DbSet<UserAuth> UserAuth { get; set; }
+        public virtual DbSet<Post> Post { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -43,6 +45,12 @@ namespace DotNetAPI.Data
                 .Entity<UserAuth>()
                 .ToTable("Auth", "TutorialAppSchema")
                 .HasNoKey();
+
+            modelBuilder
+                .HasDefaultSchema("TutorialAppSchema")
+                .Entity<Post>()
+                .ToTable("Posts", "TutorialAppSchema")
+                .HasKey(u => u.PostId);
         }
     }
 }
