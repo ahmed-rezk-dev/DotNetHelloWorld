@@ -17,6 +17,7 @@ namespace DotNetAPI.Controllers
             _dataContext = new DataContextEF(config);
         }
 
+        //NOTE: Get all posts.
         [HttpGet("")]
         public IActionResult Posts(Post inputs)
         {
@@ -35,6 +36,9 @@ namespace DotNetAPI.Controllers
         }
 
         //NOTE: Get all posts by user id.
+
+
+        //NOTE: Crate a new post with user id.
         [HttpPost("")]
         public IActionResult add(PostDto inputs)
         {
@@ -54,12 +58,11 @@ namespace DotNetAPI.Controllers
             return Ok("Post Created Successfully.");
         }
 
+        // TODO: search by post title or content.
+
         // TODO: Update post
 
 
         // TODO: Delete post
-
-
-        // TODO: search by post title or content.
     }
 }
