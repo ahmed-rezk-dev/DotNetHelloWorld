@@ -17,7 +17,7 @@ namespace DotNetAPI.Controllers
             _dataContext = new DataContextEF(config);
         }
 
-        //NOTE: Get all posts.
+        //* Get all posts.
         [HttpGet("")]
         public IActionResult Posts(Post inputs)
         {
@@ -25,7 +25,7 @@ namespace DotNetAPI.Controllers
             return Ok(posts);
         }
 
-        //NOTE: Get post by ID
+        //* Get post by ID
         [HttpGet("{PostId}")]
         public IActionResult Post(int PostId)
         {
@@ -35,10 +35,22 @@ namespace DotNetAPI.Controllers
             return Ok(post);
         }
 
-        //NOTE: Get all posts by user id.
+        //* Get all posts by user id.
+        [HttpGet("user")]
+        public IActionResult UserPosts()
+        {
+            string? userId = User.FindFirst("userId")?.Value;
+            if (userId == null)
+                return BadRequest("userId is required");
+            int UserId = int.Parse(userId);
 
+            IEnumerable<Post> userPosts = _dataContext
+                .Post.Where(post => post.UserId == UserId)
+                .ToList();
+            return Ok(userPosts);
+        }
 
-        //NOTE: Crate a new post with user id.
+        //* Crate a new post with user id.
         [HttpPost("")]
         public IActionResult add(PostDto inputs)
         {
@@ -58,7 +70,17 @@ namespace DotNetAPI.Controllers
             return Ok("Post Created Successfully.");
         }
 
-        // TODO: search by post title or content.
+        //* Search by post title or content.
+        [HttpGet("search/{keywords}")]
+        public IActionResult sarech(string keywords)
+        {
+            IEnumerable<Post> posts = _dataContext
+                .Post.Where(post =>
+                    post.PostTitle.Contains(keywords) || post.PostContect.Contains(keywords)
+                )
+                .ToList();
+            return Ok(posts);
+        }
 
         // TODO: Update post
 
