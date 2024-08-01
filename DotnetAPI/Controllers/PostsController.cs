@@ -24,10 +24,17 @@ namespace DotNetAPI.Controllers
             return Ok(posts);
         }
 
-        // TODO: Get post by ID
+        //NOTE: Get post by ID
+        [HttpGet("{PostId}")]
+        public IActionResult Post(int PostId)
+        {
+            Post? post = _dataContext.Post.Where(post => post.PostId == PostId).FirstOrDefault();
+            if (post == null)
+                return NotFound("No post found with this id");
+            return Ok(post);
+        }
 
-        // TODO: Get all posts by user id.
-
+        //NOTE: Get all posts by user id.
         [HttpPost("")]
         public IActionResult add(PostDto inputs)
         {
