@@ -82,7 +82,7 @@ namespace DotNetAPI.Controllers
             return Ok(posts);
         }
 
-        //* Update post by post {PostId}
+        //* Update post by {PostId}
         [HttpPut("{postId}")]
         public IActionResult Update(int postId, PostDto inputs)
         {
@@ -105,6 +105,18 @@ namespace DotNetAPI.Controllers
             return NotFound("Post Not Found.");
         }
 
-        // TODO: Delete post
+        //* Delete post by {PostId}
+        [HttpDelete("{postId}")]
+        public IActionResult Delete(int postId)
+        {
+            Post? post = _dataContext.Post.Where(post => post.PostId == postId).FirstOrDefault();
+            if (post != null)
+            {
+                _dataContext.Post.Remove(post);
+                _dataContext.SaveChanges();
+                return Ok("Post successfully deleted.");
+            }
+            return NotFound("Post Not Found.");
+        }
     }
 }
