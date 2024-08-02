@@ -62,7 +62,7 @@ namespace DotNetAPI.Controllers
             Post post = new Post();
             post.UserId = UserId;
             post.PostTitle = inputs.PostTitle;
-            post.PostContent = inputs.PostContect;
+            post.PostContent = inputs.PostContent;
             post.PostCreated = DateTime.Now;
             post.PostUpdated = DateTime.Now;
             _dataContext.Post.Add(post);
@@ -94,7 +94,7 @@ namespace DotNetAPI.Controllers
             if (post != null)
             {
                 post.PostTitle = inputs.PostTitle;
-                post.PostContent = inputs.PostContect;
+                post.PostContent = inputs.PostContent;
                 post.PostUpdated = DateTime.Now;
                 if (_dataContext.SaveChanges() > 0)
                 {
