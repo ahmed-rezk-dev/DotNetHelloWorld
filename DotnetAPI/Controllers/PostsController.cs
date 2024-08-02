@@ -62,7 +62,7 @@ namespace DotNetAPI.Controllers
             Post post = new Post();
             post.UserId = UserId;
             post.PostTitle = inputs.PostTitle;
-            post.PostContect = inputs.PostContect;
+            post.PostContent = inputs.PostContect;
             post.PostCreated = DateTime.Now;
             post.PostUpdated = DateTime.Now;
             _dataContext.Post.Add(post);
@@ -76,7 +76,7 @@ namespace DotNetAPI.Controllers
         {
             IEnumerable<Post> posts = _dataContext
                 .Post.Where(post =>
-                    post.PostTitle.Contains(keywords) || post.PostContect.Contains(keywords)
+                    post.PostTitle.Contains(keywords) || post.PostContent.Contains(keywords)
                 )
                 .ToList();
             return Ok(posts);
@@ -94,7 +94,7 @@ namespace DotNetAPI.Controllers
             if (post != null)
             {
                 post.PostTitle = inputs.PostTitle;
-                post.PostContect = inputs.PostContect;
+                post.PostContent = inputs.PostContect;
                 post.PostUpdated = DateTime.Now;
                 if (_dataContext.SaveChanges() > 0)
                 {
